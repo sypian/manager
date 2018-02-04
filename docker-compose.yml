@@ -5,9 +5,11 @@ services:
     build: images/nginx
     command: nginx -g "daemon off;"
     links:
-      - php-fpm:php
+      - php-fpm
     ports:
       - "80:80"
+    volumes:
+      - ./:/var/www/html
 
   php-fpm:
     build:
@@ -21,6 +23,8 @@ services:
     command: php-fpm
     ports:
       - "9000:9000"
+    links:
+      - mysql
     environment:
       APP_ENV: local
       APP_DEBUG: 'true'
@@ -29,14 +33,17 @@ services:
       APP_FALLBACK_LOCALE: en
       GIT_BRANCH: ${TRAVIS_BRANCH-HEAD}
 
-  postgres:
-    image: "postgres:latest"
+  mysql:
+    image: mysql
     restart: always
     environment:
-      POSTGRES_PASSWORD: foobar
+      MYSQL_ROOT_PASSWORD: foobar
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+      MYSQL_DATABASE: sypian_manager
 
   adminer:
-    image: "adminer:latest"
+    image: adminer
     restart: always
     ports:
       - 8080:8080

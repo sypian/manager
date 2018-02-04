@@ -10,7 +10,7 @@ COPY install_env_requirements.sh /tmp/docker/install_env_requirements.sh
 RUN chmod +x /tmp/docker/install_env_requirements.sh \
     && sh /tmp/docker/install_env_requirements.sh ${sypian_env}
 
-RUN docker-php-ext-install bcmath
+RUN docker-php-ext-install bcmath pdo_mysql
 
 ENV PATH="/var/www/html/vendor/bin:${PATH}"
 
