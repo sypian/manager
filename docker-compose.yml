@@ -1,0 +1,49 @@
+version: "3.1"
+services:
+
+  nginx:
+    build: images/nginx
+    command: nginx -g "daemon off;"
+    links:
+      - php-fpm
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www/html
+
+  php-fpm:
+    build:
+      context: images/php-fpm
+      args:
+        sypian_env: ${SYPIAN_BUILD_ENV-development}
+    container_name: sypian-manager
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html/public
+    command: php-fpm
+    ports:
+      - "9000:9000"
+    links:
+      - mysql
+    environment:
+      APP_ENV: local
+      APP_DEBUG: 'true'
+      APP_KEY: base64:XonIhcT+u9AD+8jTPxxRHYQy/IEJ/Nds1qaPDTaX544=
+      APP_LOCALE: en
+      APP_FALLBACK_LOCALE: en
+      GIT_BRANCH: ${TRAVIS_BRANCH-HEAD}
+
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: foobar
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+      MYSQL_DATABASE: sypian_manager
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
